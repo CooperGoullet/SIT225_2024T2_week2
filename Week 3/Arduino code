@@ -1,0 +1,48 @@
+#include "arduino_secrets.h"
+#include <DHT.h>
+#include "thingProperties.h"
+#define DHTPIN 2
+#define DHTTYPE DHT22
+
+DHT dht(DHTPIN, DHTTYPE);
+
+void setup() {
+  // Initialize serial and wait for port to open:
+  Serial.begin(9600);
+  // This delay gives the chance to wait for a Serial Monitor without blocking if none is found
+  delay(1500);
+
+  // Defined in thingProperties.h
+  initProperties();
+
+  // Connect to Arduino IoT Cloud
+  ArduinoCloud.begin(ArduinoIoTPreferredConnection);
+
+  // Initialize DHT sensor
+  dht.begin();
+
+  setDebugMessageLevel(2);
+  ArduinoCloud.printDebugInfo();
+}
+
+void loop() {
+  ArduinoCloud.update();
+
+  // Read temperature and humidity
+  temp = dht.readTemperature();
+  hum = dht.readHumidity();
+
+
+  Serial.println("Temperature: " + String(temp) + " °C");
+  Serial.println("Humidity: " + String(hum) + " %");
+
+  delay(2000);  // Wait for 2 seconds before reading again
+}
+
+void onTempChange() {
+  // Handle temperature change
+}
+
+void onHumChange() {
+  // Handle humidity change
+}
